@@ -1,0 +1,12 @@
+{% extends "base.html.twig" %}
+
+{% trans_default_domain 'NovosgaSchedulingBundle' %}
+
+{% block title -%}
+    {{ 'title'|trans }}
+{%- endblock %} 
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link type="text/css" rel="stylesheet" href="{{ asset('bundles/novosgausers/css/style.css') }}">
+{% endblock %}

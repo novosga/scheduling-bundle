@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="pt-BR" target-language="pt-BR" datatype="plaintext" original="messages.pt_BR.xlf">
+    <body>
+      <trans-unit id="0">
+        <source>module.name</source>
+        <target>Agendamento</target>
+      </trans-unit>
+      <trans-unit id="1">
+        <source>title</source>
+        <target>Agendamento</target>
+      </trans-unit>
+      <trans-unit id="2">
+        <source>subtitle</source>
+        <target>Gerencie os agendamentos de atendimento</target>
+      </trans-unit>
+      <trans-unit id="3">
+        <source>label.name</source>
+        <target>Nome</target>
+      </trans-unit>
+      <trans-unit id="4">
+        <source>label.email</source>
+        <target>E-mail</target>
+      </trans-unit>
+      <trans-unit id="5">
+        <source>label.customer_id</source>
+        <target>Documento</target>
+      </trans-unit>
+      <trans-unit id="6">
+        <source>button.new_scheduling</source>
+        <target>Novo cliente</target>
+      </trans-unit>
+      <trans-unit id="7">
+        <source>button.save</source>
+        <target>Salvar</target>
+      </trans-unit>
+      <trans-unit id="8">
+        <source>button.back</source>
+        <target>Voltar</target>
+      </trans-unit>
+      <trans-unit id="9">
+        <source>label.search</source>
+        <target>Buscar</target>
+      </trans-unit>
+      <trans-unit id="10">
+        <source>form.customer.name</source>
+        <target>Nome</target>
+      </trans-unit>
+      <trans-unit id="11">
+        <source>form.customer.id</source>
+        <target>Documento</target>
+      </trans-unit>
+      <trans-unit id="12">
+        <source>form.customer.email</source>
+        <target>E-mail</target>
+      </trans-unit>
+      <trans-unit id="13">
+        <source>label.customer_tickets</source>
+        <target>Atendimentos</target>
+      </trans-unit>
+      <trans-unit id="14">
+        <source>label.ticket</source>
+        <target>Senha</target>
+      </trans-unit>
+      <trans-unit id="15">
+        <source>label.date</source>
+        <target>Data chegada</target>
+      </trans-unit>
+      <trans-unit id="16">
+        <source>label.status</source>
+        <target>Situação</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

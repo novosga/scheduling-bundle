@@ -1,0 +1,48 @@
+{% extends "@NovosgaScheduling/base.html.twig" %}
+
+{% trans_default_domain 'NovosgaSchedulingBundle' %}
+
+{% block body %}
+    <h1>
+        <i class="fa fa-address-book" aria-hidden="true"></i>
+        {{ 'title'|trans }}
+        <small>
+            {{ 'subtitle'|trans }}
+        </small>
+    </h1>
+        
+    <hr>
+        
+    {{ form_start(form) }}
+
+        {% include 'flashMessages.html.twig' %}
+
+        {{ form_row(form.data) }}
+
+        {{ form_row(form.hora) }}
+
+        {{ form_row(form.servico) }}
+        
+        {{ form_row(form.cliente) }}
+        
+        <hr>
+
+        <div class="buttons">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-check"></i> 
+                {{ 'button.save'|trans }}
+            </button>
+            <a href="{{ path('novosga_scheduling_index') }}" class="btn btn-secondary">
+                <i class="fa fa-chevron-left"></i>
+                {{ 'button.back'|trans }}
+            </a>
+        </div>
+
+    {{ form_end(form) }}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/novosgascheduling/js/script.js') }}"></script>
+{% endblock %}

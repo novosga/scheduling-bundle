@@ -1,0 +1,64 @@
+{% extends "@NovosgaScheduling/base.html.twig" %}
+
+{% trans_default_domain 'NovosgaSchedulingBundle' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-6  col-lg-8">
+            <h1>
+                <i class="fa fa-address-book" aria-hidden="true"></i>
+                {{ 'title'|trans }}
+                <small>
+                    {{ 'subtitle'|trans }}
+                </small>
+            </h1>
+        </div>
+        <div class="col-md-6 col-lg-4 text-right">
+            <form class="form-inline">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="q" placeholder="{{ 'label.search'|trans }}" value="{{ app.request.get('q') }}">
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+                <a href="{{ path('novosga_scheduling_new') }}" class="btn btn-primary ml-auto">
+                    <i class="fa fa-plus"></i>
+                    {{ 'button.new_scheduling'|trans }}
+                </a>
+            </form>
+        </div>
+    </div>
+        
+    <hr>
+    
+    <table class="table table-bordered">
+        <thead class="thead-light">
+            <th>#</th>
+            <th>{{ 'label.date'|trans }}</th>
+            <th>{{ 'label.time'|trans }}</th>
+            <th>{{ 'label.name'|trans }}</th>
+            <th>{{ 'label.customer_id'|trans }}</th>
+            <th></th>
+        </thead>
+        <tbody>
+            {% for agendamento in agendamentos %}
+                <tr>
+                    <td>{{ agendamento.id }}</td>
+                    <td>{{ agendamento.date|date('d/m/Y') }}</td>
+                    <td>{{ agendamento.time|date('H:i') }}</td>
+                    <td>{{ agendamento.cliente.nome }}</td>
+                    <td>{{ agendamento.cliente.documento }}</td>
+                    <td class="text-right">
+                        <a href="{{ path('novosga_scheduling_edit', { id: agendamento.id }) }}" class="btn btn-secondary">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+            
+    {{ paginacao|raw }}
+{% endblock %}
