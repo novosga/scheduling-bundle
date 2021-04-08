@@ -12,26 +12,67 @@
     </h1>
         
     <hr>
+
+    {% if entity.oid %}
+        <div class="alert alert-info">
+            Agendamento importado via integração. ID externo: <strong>{{ entity.oid }}</strong>.
+        </div>
+    {% endif %}
+
+    {% if entity.dataConfirmacao %}
+        <div class="alert alert-info">
+            Confirmada presença do agendamento e senha gerada em <strong>{{ entity.dataConfirmacao|date('d/m/Y H:i:s') }}</strong>.
+        </div>
+    {% endif %}
         
     {{ form_start(form) }}
 
         {% include 'flashMessages.html.twig' %}
 
-        {{ form_row(form.data) }}
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                {{ form_row(form.data) }}
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2">
+                {{ form_row(form.hora) }}
+            </div>
+            <div class="col-12 col-md-5 col-lg-7">
+                {{ form_row(form.servico) }}
+            </div>
+        </div>
 
-        {{ form_row(form.hora) }}
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                {{ form_row(form.cliente.nome) }}
+            </div>
+            <div class="col-12 col-lg-6">
+                {{ form_row(form.cliente.email) }}
+            </div>
+        </div>
 
-        {{ form_row(form.servico) }}
-        
-        {{ form_row(form.cliente) }}
+        <div class="row">
+            <div class="col-12 col-md-4">
+                {{ form_row(form.cliente.documento) }}
+            </div>
+            <div class="col-12 col-md-4">
+                {{ form_row(form.cliente.telefone) }}
+            </div>
+            <div class="col-12 col-md-4">
+                {{ form_row(form.cliente.genero) }}
+            </div>
+        </div>
+
+        {{ form_row(form.cliente.observacao) }}
         
         <hr>
 
         <div class="buttons">
-            <button type="submit" class="btn btn-primary">
-                <i class="fa fa-check"></i> 
-                {{ 'button.save'|trans }}
-            </button>
+            {% if not entity.dataConfirmacao %}
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-check"></i> 
+                    {{ 'button.save'|trans }}
+                </button>
+            {% endif %}
             <a href="{{ path('novosga_scheduling_index') }}" class="btn btn-secondary">
                 <i class="fa fa-chevron-left"></i>
                 {{ 'button.back'|trans }}

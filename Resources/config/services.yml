@@ -10,6 +10,13 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
         
+    Novosga\SchedulingBundle\:
+        resource: '../../'
+        exclude:
+            - '../../DependencyInjection/'
+            - '../../Dto/'
+            - '../../Tests/'
+
     Novosga\SchedulingBundle\Controller\:
         resource: '../../Controller'
         tags: ['controller.service_arguments']

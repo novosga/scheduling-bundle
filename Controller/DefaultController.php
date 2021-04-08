@@ -1,17 +1,24 @@
 <?php
 
+/*
+ * This file is part of the Novo SGA project.
+ *
+ * (c) Rogerio Lino <rogeriolino@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Novosga\SchedulingBundle\Controller;
 
 use Exception;
 use Novosga\Entity\Agendamento as Entity;
-use Novosga\Entity\Cliente;
-use Novosga\Http\Envelope;
 use Novosga\SchedulingBundle\Form\AgendamentoType as EntityType;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Scheduling controller.
@@ -31,6 +38,8 @@ class DefaultController extends AbstractController
     public function index(Request $request)
     {
         $search = $request->get('q');
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
         
         $qb = $this
             ->getDoctrine()
@@ -38,38 +47,37 @@ class DefaultController extends AbstractController
             ->createQueryBuilder()
             ->select('e', 'c')
             ->from(Entity::class, 'e')
-            ->join('e.cliente', 'c');
-        
-        $params = [];
+            ->join('e.cliente', 'c')
+            ->where('e.unidade = :unidade')
+            ->setParameter('unidade', $unidade)
+            ->orderBy('e.data', 'ASC');
         
         if (!empty($search)) {
             $where       = [ 
                 'c.email LIKE :s',
                 'c.documento LIKE :s'
             ];
-            $params['s'] = "%{$search}%";
+            $qb->setParameter('s', "%{$search}%");
             
             $tokens = explode(' ', $search);
             
             for ($i = 0; $i < count($tokens); $i++) {
-                $value       = $tokens[$i];
-                $v1          = "n{$i}";
-                $where[]     = "(UPPER(c.nome) LIKE UPPER(:{$v1}))";
-                $params[$v1] = "{$value}%";
+                $value = $tokens[$i];
+                $v1 = "n{$i}";
+                $where[] = "(UPPER(c.nome) LIKE UPPER(:{$v1}))";
+                $qb->setParameter($v1, "{$value}%");
             }
             
             $qb->andWhere(join(' OR ', $where));
         }
         
-        $query = $qb
-            ->setParameters($params)
-            ->getQuery();
+        $query = $qb->getQuery();
         
         $currentPage = max(1, (int) $request->get('p'));
         
-        $adapter    = new \Pagerfanta\Adapter\DoctrineORMAdapter($query);
+        $adapter = new \Pagerfanta\Adapter\DoctrineORMAdapter($query);
         $pagerfanta = new \Pagerfanta\Pagerfanta($adapter);
-        $view       = new \Pagerfanta\View\TwitterBootstrap4View();
+        $view = new \Pagerfanta\View\TwitterBootstrap4View();
         
         $pagerfanta->setCurrentPage($currentPage);
         
@@ -87,47 +95,57 @@ class DefaultController extends AbstractController
             ]
         );
         
-        $clientes = $pagerfanta->getCurrentPageResults();
+        $agendamentos = $pagerfanta->getCurrentPageResults();
         
         return $this->render('@NovosgaScheduling/default/index.html.twig', [
             'agendamentos' => $agendamentos,
-            'paginacao'    => $html,
+            'paginacao' => $html,
         ]);
     }
     
     /**
-     *
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     *
      * @Route("/new", name="novosga_scheduling_new", methods={"GET", "POST"})
-     * @Route("/{id}/edit", name="novosga_scheduling_edit", methods={"GET", "POST"})
      */
-    public function form(Request $request, TranslatorInterface $translator, Entity $entity = null)
+    public function add(Request $request, TranslatorInterface $translator)
     {
-        if (!$entity) {
-            $entity = new Entity();
+        return $this->form($request, $translator, new Entity);
+    }
+    
+    /**
+     * @Route("/{id}", name="novosga_scheduling_edit", methods={"GET", "POST"})
+     */
+    public function edit(Request $request, TranslatorInterface $translator, Entity $entity)
+    {
+        return $this->form($request, $translator, $entity);
+    }
+    
+    private function form(Request $request, TranslatorInterface $translator, Entity $entity)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+
+        if ($entity->getUnidade() && $entity->getUnidade()->getId() !== $unidade->getId()) {
+            return $this->redirectToRoute('novosga_scheduling_index');
         }
-        
-        $em   = $this->getDoctrine()->getManager();
+
+        // desabilita edição do agendamento caso já tenha sido confirmado ou veio de integração externa
+        $isDisabled = !!$entity->getDataConfirmacao() || !!$entity->getOid();
+
         $form = $this
-            ->createForm(EntityType::class, $entity, [])
+            ->createForm(EntityType::class, $entity, [
+                'disabled' => $isDisabled,
+            ])
             ->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $isNew = !$entity->getId();
+                $entity->setUnidade($unidade);
 
-                if ($isNew) {
-                    $em->persist($entity);
-                } else {
-                    $em->merge($entity);
-                }
-                
+                $em->persist($entity);
                 $em->flush();
                 
-                $this->addFlash('success', $translator->trans('label.add_sucess', [], self::DOMAIN));
+                $this->addFlash('success', $translator->trans('label.add_success', [], self::DOMAIN));
                 
                 return $this->redirectToRoute('novosga_scheduling_edit', [ 'id' => $entity->getId() ]);
             } catch (Exception $e) {
@@ -137,7 +155,7 @@ class DefaultController extends AbstractController
         
         return $this->render('@NovosgaScheduling/default/form.html.twig', [
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 }

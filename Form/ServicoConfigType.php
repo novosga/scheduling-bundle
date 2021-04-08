@@ -11,19 +11,17 @@
 
 namespace Novosga\SchedulingBundle\Form;
 
-use App\Form\ClienteType;
-use Novosga\Entity\Agendamento;
 use Novosga\Entity\Servico;
+use Novosga\SchedulingBundle\Dto\ServicoConfig;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TimeType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotNull;
-use Symfony\Component\Validator\Constraints\Valid;
 
-class AgendamentoType extends AbstractType
+class ServicoConfigType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -32,32 +30,25 @@ class AgendamentoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('cliente', ClienteType::class, [
-                'constraints' => [
-                    new Valid(),
-                ],
-                'label' => 'form.scheduling.customer',
-            ])
-            ->add('servico', EntityType::class, [
+            ->add('servicoLocal', EntityType::class, [
                 'class' => Servico::class,
                 'constraints' => [
                     new NotNull(),
                 ],
-                'label' => 'form.scheduling.service',
+                'placeholder' => '',
+                'label' => 'label.local_service',
             ])
-            ->add('data', DateType::class, [
+            ->add('servicoRemoto', IntegerType::class, [
                 'constraints' => [
                     new NotNull(),
                 ],
-                'widget' => 'single_text',
-                'html5' => true,
-                'label' => 'form.scheduling.date',
+                'label' => 'label.remote_service',
             ])
-            ->add('hora', TimeType::class, [
+            ->add('senha', TextType::class, [
                 'constraints' => [
                     new NotNull(),
                 ],
-                'label' => 'form.scheduling.time',
+                'label' => 'form.config.password',
             ]);
     }
     
@@ -67,10 +58,9 @@ class AgendamentoType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver
-            ->setDefaults([
-                'data_class' => Agendamento::class,
-                'translation_domain' => 'NovosgaSchedulingBundle',
-            ]);
+        $resolver->setDefaults([
+            'data_class' => ServicoConfig::class,
+            'translation_domain' => 'NovosgaSchedulingBundle',
+        ]);
     }
 }

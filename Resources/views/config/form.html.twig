@@ -1,0 +1,44 @@
+{% extends "@NovosgaScheduling/base.html.twig" %}
+
+{% trans_default_domain 'NovosgaSchedulingBundle' %}
+
+{% block body %}
+    <h1>
+        <i class="fa fa-address-book" aria-hidden="true"></i>
+        {{ 'config_title'|trans }}
+        <small>
+            {{ 'config_subtitle'|trans }}
+        </small>
+    </h1>
+        
+    <hr>
+        
+    {{ form_start(form) }}
+
+        {% include 'flashMessages.html.twig' %}
+
+        {{ form_row(form.servicoLocal) }}
+        {{ form_row(form.servicoRemoto, { attr: { autocomplete: 'no' }  }) }}
+        {{ form_row(form.senha, { type: 'password', attr: { autocomplete: 'no' } }) }}
+
+        <hr>
+
+        <div class="buttons">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-check"></i> 
+                {{ 'button.save'|trans }}
+            </button>
+            <a href="{{ path('novosga_scheduling_config_index') }}" class="btn btn-secondary">
+                <i class="fa fa-chevron-left"></i>
+                {{ 'button.back'|trans }}
+            </a>
+        </div>
+
+    {{ form_end(form) }}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/novosgascheduling/js/script.js') }}"></script>
+{% endblock %}

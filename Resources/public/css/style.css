@@ -5,3 +5,13 @@
 body>section {
     padding: 20px 10px;
 }
+
+p.links {
+    padding-top: 20px;
+    text-align: center;
+    clear: both;
+}
+
+p.links a {
+    margin: 0 5px;
+}

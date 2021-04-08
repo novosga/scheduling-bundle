@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="pt-BR" target-language="pt-BR" datatype="plaintext" original="messages.pt_BR.xlf">
+    <body>
+      <trans-unit id="module.name">
+        <source>module.name</source>
+        <target>Agendamento</target>
+      </trans-unit>
+      <trans-unit id="title">
+        <source>title</source>
+        <target>Agendamento</target>
+      </trans-unit>
+      <trans-unit id="subtitle">
+        <source>subtitle</source>
+        <target>Gerencie os agendamentos de atendimento</target>
+      </trans-unit>
+      <trans-unit id="config_title">
+        <source>config_title</source>
+        <target>Agendamento > Config</target>
+      </trans-unit>
+      <trans-unit id="config_subtitle">
+        <source>config_subtitle</source>
+        <target>Integração com Eu Agendei Online</target>
+      </trans-unit>
+      <trans-unit id="label.name">
+        <source>label.name</source>
+        <target>Nome</target>
+      </trans-unit>
+      <trans-unit id="label.email">
+        <source>label.email</source>
+        <target>E-mail</target>
+      </trans-unit>
+      <trans-unit id="label.customer_id">
+        <source>label.customer_id</source>
+        <target>Documento</target>
+      </trans-unit>
+      <trans-unit id="button.new_scheduling">
+        <source>button.new_scheduling</source>
+        <target>Novo agendamento</target>
+      </trans-unit>
+      <trans-unit id="button.save">
+        <source>button.save</source>
+        <target>Salvar</target>
+      </trans-unit>
+      <trans-unit id="button.back">
+        <source>button.back</source>
+        <target>Voltar</target>
+      </trans-unit>
+      <trans-unit id="label.search">
+        <source>label.search</source>
+        <target>Buscar</target>
+      </trans-unit>
+      <trans-unit id="form.customer.name">
+        <source>form.customer.name</source>
+        <target>Nome</target>
+      </trans-unit>
+      <trans-unit id="form.customer.id">
+        <source>form.customer.id</source>
+        <target>Documento</target>
+      </trans-unit>
+      <trans-unit id="form.customer.email">
+        <source>form.customer.email</source>
+        <target>E-mail</target>
+      </trans-unit>
+      <trans-unit id="label.customer_tickets">
+        <source>label.customer_tickets</source>
+        <target>Atendimentos</target>
+      </trans-unit>
+      <trans-unit id="label.ticket">
+        <source>label.ticket</source>
+        <target>Senha</target>
+      </trans-unit>
+      <trans-unit id="label.date">
+        <source>label.date</source>
+        <target>Data chegada</target>
+      </trans-unit>
+      <trans-unit id="label.status">
+        <source>label.status</source>
+        <target>Situação</target>
+      </trans-unit>
+      <trans-unit id="label.time">
+        <source>label.time</source>
+        <target>Hora</target>
+      </trans-unit>
+      <trans-unit id="form.scheduling.date">
+        <source>form.scheduling.date</source>
+        <target>Data</target>
+      </trans-unit>
+      <trans-unit id="form.scheduling.time">
+        <source>form.scheduling.time</source>
+        <target>Hora</target>
+      </trans-unit>
+      <trans-unit id="form.scheduling.service">
+        <source>form.scheduling.service</source>
+        <target>Serviço</target>
+      </trans-unit>
+      <trans-unit id="form.scheduling.customer">
+        <source>form.scheduling.customer</source>
+        <target>Cliente</target>
+      </trans-unit>
+      <trans-unit id="label.phone">
+          <source>label.phone</source>
+          <target>Telefone</target>
+      </trans-unit>
+      <trans-unit id="label.gender">
+          <source>label.gender</source>
+          <target>Gênero</target>
+      </trans-unit>
+      <trans-unit id="label.gender.male">
+          <source>label.gender.male</source>
+          <target>Masculino</target>
+      </trans-unit>
+      <trans-unit id="label.gender.female">
+          <source>label.gender.female</source>
+          <target>Feminino</target>
+      </trans-unit>
+      <trans-unit id="label.gender.unknown">
+          <source>label.gender.unknown</source>
+          <target>Outro</target>
+      </trans-unit>
+      <trans-unit id="label.notes">
+          <source>label.notes</source>
+          <target>Observação</target>
+      </trans-unit>
+      <trans-unit id="label.local_service">
+          <source>label.local_service</source>
+          <target>Serviço local</target>
+      </trans-unit>
+      <trans-unit id="label.remote_service">
+          <source>label.remote_service</source>
+          <target>Serviço remoto</target>
+      </trans-unit>
+      <trans-unit id="button.new_config">
+          <source>button.new_config</source>
+          <target>Nova agenda</target>
+      </trans-unit>
+      <trans-unit id="form.config.password">
+          <source>form.config.password</source>
+          <target>Senha</target>
+      </trans-unit>
+      <trans-unit id="label.add_success">
+          <source>label.add_success</source>
+          <target>Agendamento adicionado com successo</target>
+      </trans-unit>
+      <trans-unit id="label.add_config_success">
+          <source>label.add_config_success</source>
+          <target>Configuração atualizada com successo</target>
+      </trans-unit>
+      <trans-unit id="label.remote_unity">
+          <source>label.remote_unity</source>
+          <target>Unidade remota</target>
+      </trans-unit>
+      <trans-unit id="label.url_api">
+          <source>label.url_api</source>
+          <target>Endereço da API</target>
+      </trans-unit>
+      <trans-unit id="label.remote_scheduling_app">
+          <source>label.remote_scheduling_app</source>
+          <target>Eu Agendei Online</target>
+      </trans-unit>
+      <trans-unit id="label.remote_scheduling_app_link">
+          <source>label.remote_scheduling_app_link</source>
+          <target>https://euagendei.online</target>
+      </trans-unit>
+      <trans-unit id="label.service_configs">
+          <source>label.service_configs</source>
+          <target>Agendas</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
