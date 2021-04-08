@@ -61,7 +61,7 @@ class SyncCommand extends Command
         EntityManagerInterface $em,
         SchedulingService $service,
         HttpClientInterface $client,
-        AgendamentoRepository $agendamentoRepository,
+        AgendamentoRepository $agendamentoRepository
     ) 
     {
         parent::__construct();
