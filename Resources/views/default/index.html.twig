@@ -16,6 +16,12 @@
         <div class="col-md-6 col-lg-4 text-right">
             <form class="form-inline">
                 <div class="input-group">
+                    <select class="form-control" name="situacao">
+                        <option disabled>{{ 'label.status'|trans }}</option>
+                        <option value="agendado" {% if app.request.get('situacao') == 'agendado' %}selected{% endif %}>{{ 'label.status_agendado'|trans }}</option>
+                        <option value="confirmado" {% if app.request.get('situacao') == 'confirmado' %}selected{% endif %}>{{ 'label.status_confirmado'|trans }}</option>
+                        <option value="nao_compareceu" {% if app.request.get('situacao') == 'nao_compareceu' %}selected{% endif %}>{{ 'label.status_nao_compareceu'|trans }}</option>
+                    </select>
                     <input type="text" class="form-control" name="q" placeholder="{{ 'label.search'|trans }}" value="{{ app.request.get('q') }}">
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-secondary">
@@ -38,18 +44,26 @@
             <th>#</th>
             <th>{{ 'label.date'|trans }}</th>
             <th>{{ 'label.time'|trans }}</th>
-            <th>{{ 'label.name'|trans }}</th>
             <th>{{ 'label.customer_id'|trans }}</th>
+            <th>{{ 'label.name'|trans }}</th>
+            <th>{{ 'label.service'|trans }}</th>
             <th></th>
         </thead>
         <tbody>
             {% for agendamento in agendamentos %}
-                <tr>
+                {% set bgclass = '' %}
+                {% if agendamento.situacao == 'nao_compareceu' %}
+                    {% set bgclass = 'table-danger' %}
+                {% elseif agendamento.situacao == 'confirmado' %}
+                    {% set bgclass = 'table-success' %}
+                {% endif %}
+                <tr class="{{ bgclass }}">
                     <td>{{ agendamento.id }}</td>
                     <td>{{ agendamento.data|date('d/m/Y') }}</td>
                     <td>{{ agendamento.hora|date('H:i') }}</td>
-                    <td>{{ agendamento.cliente.nome }}</td>
                     <td>{{ agendamento.cliente.documento }}</td>
+                    <td>{{ agendamento.cliente.nome }}</td>
+                    <td>{{ agendamento.servico.nome }}</td>
                     <td class="text-right">
                         <a href="{{ path('novosga_scheduling_edit', { id: agendamento.id }) }}" class="btn btn-secondary">
                             <i class="fa fa-edit"></i>

@@ -25,7 +25,7 @@
 
     <fieldset>
         <legend>
-            <a href="{{ 'label.remote_scheduling_app_link'|trans }}?utm_source=novosga&utm_medium=scheduling" target="_blank">
+            <a href="{{ apiUrl }}" target="_blank">
                 <span class="text-dark">
                     {{ 'label.remote_scheduling_app'|trans }}
                 </span>
@@ -38,9 +38,6 @@
             {% include 'flashMessages.html.twig' %}
 
             <div class="row">
-                <div class="col-12 col-lg-8">
-                    {{ form_row(form.url) }}
-                </div>
                 <div class="col-12 col-lg-4">
                     {{ form_row(form.unidadeRemota) }}
                 </div>

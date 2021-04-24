@@ -19,7 +19,6 @@
 
         {{ form_row(form.servicoLocal) }}
         {{ form_row(form.servicoRemoto, { attr: { autocomplete: 'no' }  }) }}
-        {{ form_row(form.senha, { type: 'password', attr: { autocomplete: 'no' } }) }}
 
         <hr>
 
@@ -35,6 +34,18 @@
         </div>
 
     {{ form_end(form) }}
+
+    {% if config.servicoLocal %}
+        <div class="text-right" style="margin-top: -30px;">
+            <form id="delete-form" method="POST" action="{{ path('novosga_scheduling_config_delete', { id: config.servicoLocal.id }) }}">
+                <input type="hidden" name="_method" value="delete" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa fa-trash"></i>
+                    Excluir
+                </button>
+            </form>
+        </div>
+    {% endif %}
 
 {% endblock %}
 

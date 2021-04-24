@@ -26,31 +26,18 @@ class ServicoConfig implements JsonSerializable
      */
     private $servicoRemoto;
 
-    /**
-     * @var string
-     */
-    private $senha;
-
-    public function getSenha(): ?string
-    {
-        return $this->senha;
-    }
-
-    public function setSenha(?string $senha): self
-    {
-        $this->senha = $senha;
-
-        return $this;
-    }
-
     public function getServicoRemoto(): ?int
     {
         return $this->servicoRemoto;
     }
 
-    public function setServicoRemoto(?int $servicoRemoto): self
+    public function setServicoRemoto($servicoRemoto): self
     {
-        $this->servicoRemoto = $servicoRemoto;
+        if ($servicoRemoto instanceof ServicoRemoto) {
+            $this->servicoRemoto = $servicoRemoto->getId();
+        } else {
+            $this->servicoRemoto = (int) $servicoRemoto;
+        }
 
         return $this;
     }
@@ -72,7 +59,6 @@ class ServicoConfig implements JsonSerializable
         return [
             'servicoLocal' => $this->servicoLocal ? $this->servicoLocal->getId() : null,
             'servicoRemoto' => $this->servicoRemoto,
-            'senha' => $this->senha,
         ];
     }
 }

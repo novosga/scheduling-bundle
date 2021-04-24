@@ -17,10 +17,10 @@ use Novosga\SchedulingBundle\Dto\ServicoConfig;
 use Novosga\SchedulingBundle\Dto\UnidadeConfig;
 use Novosga\SchedulingBundle\Form\ServicoConfigType;
 use Novosga\SchedulingBundle\Form\UnidadeConfigType;
+use Novosga\SchedulingBundle\Service\ApiClient;
 use Novosga\SchedulingBundle\Service\SchedulingService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -40,8 +40,12 @@ class ConfigController extends AbstractController
      *
      * @Route("/", name="novosga_scheduling_config_index", methods={"GET", "POST"})
      */
-    public function index(Request $request, SchedulingService $service, TranslatorInterface $translator)
-    {
+    public function index(
+        Request $request,
+        SchedulingService $service,
+        ApiClient $client,
+        TranslatorInterface $translator
+    ) {
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
         $unidadeConfig = $service->getUnidadeConfig($unidade);
@@ -65,6 +69,7 @@ class ConfigController extends AbstractController
         $servicoConfigs = $service->getServicoConfigs($unidade);
         
         return $this->render('@NovosgaScheduling/config/index.html.twig', [
+            'apiUrl' => $client->getApiUrl(),
             'unidade' => $unidade,
             'servicoConfigs' => $servicoConfigs,
             'form' => $form->createView(),
@@ -99,6 +104,18 @@ class ConfigController extends AbstractController
         return $this->form($request, $translator, $service, $config);
     }
     
+    /**
+     * @Route("/{id}", name="novosga_scheduling_config_delete", methods={"DELETE"})
+     */
+    public function delete(SchedulingService $service, Servico $servico)
+    {
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $service->removeServicoConfig($unidade, $servico);
+
+        return $this->redirectToRoute('novosga_scheduling_config_index');
+    }
+    
     private function form(
         Request $request,
         TranslatorInterface $translator,
@@ -125,6 +142,7 @@ class ConfigController extends AbstractController
         }
         
         return $this->render('@NovosgaScheduling/config/form.html.twig', [
+            'config' => $config,
             'form' => $form->createView(),
         ]);
     }

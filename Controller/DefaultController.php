@@ -13,6 +13,7 @@ namespace Novosga\SchedulingBundle\Controller;
 
 use Exception;
 use Novosga\Entity\Agendamento as Entity;
+use Novosga\Entity\Agendamento;
 use Novosga\SchedulingBundle\Form\AgendamentoType as EntityType;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,6 +39,7 @@ class DefaultController extends AbstractController
     public function index(Request $request)
     {
         $search = $request->get('q');
+        $situacao = $request->get('situacao') ?? Agendamento::SITUACAO_AGENDADO;
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
         
@@ -49,11 +51,13 @@ class DefaultController extends AbstractController
             ->from(Entity::class, 'e')
             ->join('e.cliente', 'c')
             ->where('e.unidade = :unidade')
+            ->andWhere('e.situacao = :situacao')
             ->setParameter('unidade', $unidade)
-            ->orderBy('e.data', 'ASC');
+            ->setParameter('situacao', $situacao)
+            ->orderBy('e.data', 'DESC');
         
         if (!empty($search)) {
-            $where       = [ 
+            $where = [ 
                 'c.email LIKE :s',
                 'c.documento LIKE :s'
             ];
@@ -85,8 +89,19 @@ class DefaultController extends AbstractController
         $html = $view->render(
             $pagerfanta,
             function ($page) use ($request, $path) {
-                $q = $request->get('q');
-                return "{$path}?q={$q}&p={$page}";
+                $params = [];
+                $vars = ['q', 'situacao'];
+                foreach ($vars as $name) {
+                    $value = $request->get($name);
+                    if ($value !== null) {
+                        $params[] = "{$name}={$value}";
+                    }
+                }
+                $path .= "?p={$page}";
+                if (!empty($params)) {
+                    $path .= '&' . implode('&', $params);
+                }
+                return $path;
             },
             [
                 'proximity' => 3,

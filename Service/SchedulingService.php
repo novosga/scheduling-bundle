@@ -108,6 +108,12 @@ class SchedulingService
         return $this->toServiceConfig($value);
     }
 
+    public function removeServicoConfig(Unidade $unidade, Servico $servico)
+    {
+        $name = $this->buildServicoConfigMetadataName($unidade, $servico);
+        $this->unidateMetadataRepository->remove($unidade, self::METADATA_CONFIG_NAMESPACE, $name);
+    }
+
     public function setServicoConfig(Unidade $unidade, ServicoConfig $config)
     {
         $name = $this->buildServicoConfigMetadataName($unidade, $config->getServicoLocal());
@@ -117,9 +123,7 @@ class SchedulingService
     public function toUnidadeConfig(array $value): UnidadeConfig
     {
         $config = new UnidadeConfig();
-        $config
-            ->setUnidadeRemota($value['unidadeRemota'])
-            ->setUrl($value['url']);
+        $config->setUnidadeRemota($value['unidadeRemota']);
 
         return $config;
     }
@@ -129,8 +133,7 @@ class SchedulingService
         $config = new ServicoConfig();
         $config
             ->setServicoLocal($this->servicoRepository->find($value['servicoLocal']))
-            ->setServicoRemoto($value['servicoRemoto'])
-            ->setSenha($value['senha'] ?? '');
+            ->setServicoRemoto($value['servicoRemoto']);
 
         return $config;
     }
@@ -153,7 +156,7 @@ class SchedulingService
         if (!$cliente) {
             $cliente = new Cliente();
             $cliente
-                ->setNome($nome)
+                ->setNome($nome || '')
                 ->setDocumento($documento)
                 ->setTelefone($telefone);
         }

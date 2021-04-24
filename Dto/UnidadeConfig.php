@@ -16,35 +16,22 @@ use JsonSerializable;
 class UnidadeConfig implements JsonSerializable
 {
     /**
-     * @var string
-     */
-    private $url;
-
-    /**
      * @var int
      */
     private $unidadeRemota;
 
-    public function getUnidadeRemota(): string
+    public function getUnidadeRemota(): ?int
     {
         return $this->unidadeRemota;
     }
 
-    public function setUnidadeRemota(int $unidadeRemota): self
+    public function setUnidadeRemota($unidadeRemota): self
     {
-        $this->unidadeRemota = $unidadeRemota;
-
-        return $this;
-    }
-
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(string $url): self
-    {
-        $this->url = $url;
+        if ($unidadeRemota instanceof UnidadeRemota) {
+            $this->unidadeRemota = $unidadeRemota->getId();
+        } else {
+            $this->unidadeRemota = (int) $unidadeRemota;
+        }
 
         return $this;
     }
@@ -53,7 +40,6 @@ class UnidadeConfig implements JsonSerializable
     {
         return [
             'unidadeRemota' => $this->unidadeRemota,
-            'url' => $this->url,
         ];
     }
 }

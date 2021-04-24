@@ -158,13 +158,21 @@
           <source>label.remote_scheduling_app</source>
           <target>Eu Agendei Online</target>
       </trans-unit>
-      <trans-unit id="label.remote_scheduling_app_link">
-          <source>label.remote_scheduling_app_link</source>
-          <target>https://euagendei.online</target>
-      </trans-unit>
       <trans-unit id="label.service_configs">
           <source>label.service_configs</source>
           <target>Agendas</target>
+      </trans-unit>
+      <trans-unit id="label.status_agendado">
+          <source>label.status_agendado</source>
+          <target>Agendado</target>
+      </trans-unit>
+      <trans-unit id="label.status_confirmado">
+          <source>label.status_confirmado</source>
+          <target>Confirmado</target>
+      </trans-unit>
+      <trans-unit id="label.status_nao_compareceu">
+          <source>label.status_nao_compareceu</source>
+          <target>Não compareceu</target>
       </trans-unit>
     </body>
   </file>
