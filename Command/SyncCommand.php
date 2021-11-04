@@ -91,7 +91,7 @@ class SyncCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Novo SGA Scheduling Sync');
         
-        $this->syncLocalToRemove($io);
+        //$this->syncLocalToRemove($io);
         $this->syncRemoteToLocal($io);
 
         return 0;
@@ -223,9 +223,17 @@ class SyncCommand extends Command
                         $this->em->persist($agendamento);
                         $this->em->flush();
                     }
-                    if (!$isAgendado || $agendamento) {
-                        $io->text("Record already synced found. Skipping.");
-                        // pula agendamento confirmado/cancelado ou já sincronizado
+                    if (!$isAgendado) {
+                        $io->text("Remote appoitment is already done. Skipping.");
+                        // pula agendamento confirmado/cancelado
+                        continue;
+                    }
+                    if ($agendamento) {
+                        $io->text("Record already synced found. Updating customer info.");
+                        // agendamento já sincronizado, atualiza cliente e pula
+                        $cliente = $this->service->updateCliente($agendamento->getCliente(), $value);
+                        $this->em->persist($cliente);
+                        $this->em->flush();
                         continue;
                     }
 

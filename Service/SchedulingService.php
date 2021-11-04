@@ -138,6 +138,15 @@ class SchedulingService
         return $config;
     }
 
+    public function updateCliente(Cliente $cliente, array $value): Cliente
+    {
+        return $cliente
+            ->setNome($value['nome'] ?? $cliente->getNome())
+            ->setDocumento($value['documento'] ?? $cliente->getDocumento())
+            ->setEmail($value['email'] ?? $cliente->getEmail())
+            ->setTelefone($value['telefone'] ?? $cliente->getTelefone());
+    }
+
     public function toAgendamento(Unidade $unidade, Servico $servico, array $value): Agendamento
     {
         // 'data' => $this->data->format('Y-m-d'),
@@ -145,9 +154,8 @@ class SchedulingService
         $hora = DateTime::createFromFormat('H:i', $value['horaInicio']);
 
         $oid = $value['id'];
-        $documento = $value['documento'];
-        $nome = $value['nome'];
-        $telefone = $value['telefone'];
+        $documento = $value['documento'] ?? '';
+
         $cliente = null;
         $clientes = $this->clienteRepository->findByDocumento($documento);
         if (count($clientes)) {
@@ -155,12 +163,10 @@ class SchedulingService
         }
         if (!$cliente) {
             $cliente = new Cliente();
-            $cliente
-                ->setNome($nome || '')
-                ->setDocumento($documento)
-                ->setTelefone($telefone);
         }
-        
+
+        $cliente = $this->updateCliente($cliente, $value);
+
         $agendamento = new Agendamento();
         $agendamento
             ->setOid($oid)
