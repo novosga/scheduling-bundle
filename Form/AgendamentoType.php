@@ -40,6 +40,7 @@ class AgendamentoType extends AbstractType
             ])
             ->add('servico', EntityType::class, [
                 'class' => Servico::class,
+                'placeholder' => '',
                 'constraints' => [
                     new NotNull(),
                 ],
