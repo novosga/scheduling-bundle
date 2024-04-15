@@ -58,6 +58,8 @@ class AgendamentoType extends AbstractType
                 'constraints' => [
                     new NotNull(),
                 ],
+                'widget' => 'single_text',
+                'html5' => true,
                 'label' => 'form.scheduling.time',
             ]);
     }

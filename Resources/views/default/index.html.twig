@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-md-6  col-lg-8">
+        <div class="col-md-6 col-lg-7">
             <h1>
                 <i class="fa fa-address-book" aria-hidden="true"></i>
                 {{ 'title'|trans }}
@@ -13,7 +13,7 @@
                 </small>
             </h1>
         </div>
-        <div class="col-md-6 col-lg-4 text-right">
+        <div class="col-md-6 col-lg-5 text-right">
             <form class="form-inline">
                 <div class="input-group">
                     <select class="form-control" name="situacao">
@@ -75,11 +75,4 @@
     </table>
             
     {{ paginacao|raw }}
-
-    <p class="links">
-        <a href="{{ path('novosga_scheduling_config_index') }}" class="btn btn-secondary">
-            <i class="fa fa-cog"></i>&nbsp;
-            {% trans %}Configuração{% endtrans %}
-        </a>
-    </p>
 {% endblock %}
