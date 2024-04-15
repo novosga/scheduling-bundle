@@ -14,14 +14,6 @@
         <source>subtitle</source>
         <target>Gerencie os agendamentos de atendimento</target>
       </trans-unit>
-      <trans-unit id="config_title">
-        <source>config_title</source>
-        <target>Agendamento > Config</target>
-      </trans-unit>
-      <trans-unit id="config_subtitle">
-        <source>config_subtitle</source>
-        <target>Integração com Eu Agendei Online</target>
-      </trans-unit>
       <trans-unit id="label.name">
         <source>label.name</source>
         <target>Nome</target>
@@ -122,45 +114,17 @@
           <source>label.notes</source>
           <target>Observação</target>
       </trans-unit>
-      <trans-unit id="label.local_service">
-          <source>label.local_service</source>
-          <target>Serviço local</target>
-      </trans-unit>
-      <trans-unit id="label.remote_service">
-          <source>label.remote_service</source>
-          <target>Serviço remoto</target>
-      </trans-unit>
-      <trans-unit id="button.new_config">
-          <source>button.new_config</source>
-          <target>Nova agenda</target>
-      </trans-unit>
-      <trans-unit id="form.config.password">
-          <source>form.config.password</source>
-          <target>Senha</target>
-      </trans-unit>
       <trans-unit id="label.add_success">
           <source>label.add_success</source>
           <target>Agendamento adicionado com successo</target>
-      </trans-unit>
-      <trans-unit id="label.add_config_success">
-          <source>label.add_config_success</source>
-          <target>Configuração atualizada com successo</target>
-      </trans-unit>
-      <trans-unit id="label.remote_unity">
-          <source>label.remote_unity</source>
-          <target>Unidade remota</target>
       </trans-unit>
       <trans-unit id="label.url_api">
           <source>label.url_api</source>
           <target>Endereço da API</target>
       </trans-unit>
-      <trans-unit id="label.remote_scheduling_app">
-          <source>label.remote_scheduling_app</source>
-          <target>Eu Agendei Online</target>
-      </trans-unit>
-      <trans-unit id="label.service_configs">
-          <source>label.service_configs</source>
-          <target>Agendas</target>
+      <trans-unit id="label.service">
+          <source>label.service</source>
+          <target>Serviço</target>
       </trans-unit>
       <trans-unit id="label.status_agendado">
           <source>label.status_agendado</source>

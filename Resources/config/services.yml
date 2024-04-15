@@ -14,15 +14,8 @@ services:
         resource: '../../'
         exclude:
             - '../../DependencyInjection/'
-            - '../../Dto/'
             - '../../Tests/'
 
     Novosga\SchedulingBundle\Controller\:
         resource: '../../Controller'
         tags: ['controller.service_arguments']
-
-
-    Novosga\SchedulingBundle\Service\ApiClient:
-        bind:
-            $apiUrl: '%env(SCHEDULING_API_URL)%'
-            $apiToken: '%env(SCHEDULING_API_TOKEN)%'
