@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Novo SGA project.
  *
@@ -11,11 +13,12 @@
 
 namespace Novosga\SchedulingBundle\Form;
 
-use App\Form\ClienteType;
-use Novosga\Entity\Agendamento;
-use Novosga\Entity\Servico;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Novosga\Entity\AgendamentoInterface;
+use Novosga\Entity\ServicoInterface;
+use Novosga\Form\ClienteType;
+use Novosga\Repository\ServicoRepositoryInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -25,6 +28,11 @@ use Symfony\Component\Validator\Constraints\Valid;
 
 class AgendamentoType extends AbstractType
 {
+    public function __construct(
+        private readonly ServicoRepositoryInterface $servicoRepository,
+    ) {
+    }
+
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -38,8 +46,9 @@ class AgendamentoType extends AbstractType
                 ],
                 'label' => 'form.scheduling.customer',
             ])
-            ->add('servico', EntityType::class, [
-                'class' => Servico::class,
+            ->add('servico', ChoiceType::class, [
+                'choices' => $this->servicoRepository->findAll(),
+                'choice_label' => fn (?ServicoInterface $servico) => $servico?->getNome(),
                 'placeholder' => '',
                 'constraints' => [
                     new NotNull(),
@@ -72,7 +81,7 @@ class AgendamentoType extends AbstractType
     {
         $resolver
             ->setDefaults([
-                'data_class' => Agendamento::class,
+                'data_class' => AgendamentoInterface::class,
                 'translation_domain' => 'NovosgaSchedulingBundle',
             ]);
     }

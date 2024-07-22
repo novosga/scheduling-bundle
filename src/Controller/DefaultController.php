@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Novo SGA project.
  *
@@ -12,9 +14,15 @@
 namespace Novosga\SchedulingBundle\Controller;
 
 use Exception;
-use Novosga\Entity\Agendamento as Entity;
-use Novosga\Entity\Agendamento;
-use Novosga\SchedulingBundle\Form\AgendamentoType as EntityType;
+use Novosga\Entity\AgendamentoInterface;
+use Novosga\Entity\UsuarioInterface;
+use Novosga\Repository\AgendamentoRepositoryInterface;
+use Novosga\SchedulingBundle\Form\AgendamentoType;
+use Novosga\SchedulingBundle\NovosgaSchedulingBundle;
+use Novosga\Service\AgendamentoServiceInterface;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
+use Pagerfanta\View\TwitterBootstrap5View;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,29 +34,23 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
+#[Route("/", name: "novosga_scheduling_")]
 class DefaultController extends AbstractController
 {
-    const DOMAIN = 'NovosgaSchedulingBundle';
-
-    /**
-     * @param Request $request
-     * @return Response
-     *
-     * @Route("/", name="novosga_scheduling_index", methods={"GET"})
-     */
-    public function index(Request $request)
-    {
-        $search = $request->get('q');
-        $situacao = $request->get('situacao') ?? Agendamento::SITUACAO_AGENDADO;
+    #[Route("/", name: "index", methods: ['GET'])]
+    public function index(
+        Request $request,
+        AgendamentoRepositoryInterface $repository,
+    ): Response {
+        $search = $request->get('q', '');
+        $situacao = $request->get('situacao', AgendamentoInterface::SITUACAO_AGENDADO);
+        /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
         
-        $qb = $this
-            ->getDoctrine()
-            ->getManager()
-            ->createQueryBuilder()
+        $qb = $repository
+            ->createQueryBuilder('e')
             ->select('e', 'c')
-            ->from(Entity::class, 'e')
             ->join('e.cliente', 'c')
             ->where('e.unidade = :unidade')
             ->andWhere('e.situacao = :situacao')
@@ -76,13 +78,13 @@ class DefaultController extends AbstractController
         }
         
         $query = $qb->getQuery();
-        
+
         $currentPage = max(1, (int) $request->get('p'));
-        
-        $adapter = new \Pagerfanta\Adapter\DoctrineORMAdapter($query);
-        $pagerfanta = new \Pagerfanta\Pagerfanta($adapter);
-        $view = new \Pagerfanta\View\TwitterBootstrap4View();
-        
+
+        $adapter = new QueryAdapter($query);
+        $view = new TwitterBootstrap5View();
+        $pagerfanta = new Pagerfanta($adapter);
+
         $pagerfanta->setCurrentPage($currentPage);
         
         $path = $this->generateUrl('novosga_scheduling_index');
@@ -109,7 +111,7 @@ class DefaultController extends AbstractController
                 'next_message' => '→',
             ]
         );
-        
+
         $agendamentos = $pagerfanta->getCurrentPageResults();
         
         return $this->render('@NovosgaScheduling/default/index.html.twig', [
@@ -117,52 +119,75 @@ class DefaultController extends AbstractController
             'paginacao' => $html,
         ]);
     }
-    
-    /**
-     * @Route("/new", name="novosga_scheduling_new", methods={"GET", "POST"})
-     */
-    public function add(Request $request, TranslatorInterface $translator)
-    {
-        return $this->form($request, $translator, new Entity);
-    }
-    
-    /**
-     * @Route("/{id}", name="novosga_scheduling_edit", methods={"GET", "POST"})
-     */
-    public function edit(Request $request, TranslatorInterface $translator, Entity $entity)
-    {
-        return $this->form($request, $translator, $entity);
-    }
-    
-    private function form(Request $request, TranslatorInterface $translator, Entity $entity)
-    {
-        $em = $this->getDoctrine()->getManager();
+
+    #[Route("/new", name: "new", methods: ['GET', 'POST'])]
+    public function add(
+        Request $request,
+        AgendamentoServiceInterface $service,
+        TranslatorInterface $translator,
+    ): Response {
+        /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
 
+        $entity = $service->build()->setUnidade($unidade);
+
+        return $this->form($request, $service, $translator, $entity);
+    }
+
+    #[Route("/{id}/edit", name: "edit", methods: ['GET', 'POST'])]
+    public function edit(
+        Request $request,
+        AgendamentoServiceInterface $service,
+        TranslatorInterface $translator,
+        ?int $id = null,
+    ): Response {
+        /** @var UsuarioInterface */
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+    
+        $entity = $service->getById($id);
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+    
         if ($entity->getUnidade() && $entity->getUnidade()->getId() !== $unidade->getId()) {
             return $this->redirectToRoute('novosga_scheduling_index');
         }
 
+        return $this->form($request, $service, $translator, $entity);
+    }
+
+    private function form(
+        Request $request,
+        AgendamentoServiceInterface $service,
+        TranslatorInterface $translator,
+        AgendamentoInterface $entity,
+    ): Response {
         // desabilita edição do agendamento caso já tenha sido confirmado ou veio de integração externa
         $isDisabled = !!$entity->getDataConfirmacao() || !!$entity->getOid();
-
         $form = $this
-            ->createForm(EntityType::class, $entity, [
+            ->createForm(AgendamentoType::class, $entity, [
                 'disabled' => $isDisabled,
             ])
             ->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $entity->setUnidade($unidade);
-
-                $em->persist($entity);
-                $em->flush();
+                $service->save($entity);
                 
-                $this->addFlash('success', $translator->trans('label.add_success', [], self::DOMAIN));
+                $this->addFlash(
+                    'success',
+                    $translator->trans(
+                        'label.add_success',
+                        [],
+                        NovosgaSchedulingBundle::getDomain(),
+                    )
+                );
                 
-                return $this->redirectToRoute('novosga_scheduling_edit', [ 'id' => $entity->getId() ]);
+                return $this->redirectToRoute('novosga_scheduling_edit', [
+                    'id' => $entity->getId(),
+                ]);
             } catch (Exception $e) {
                 $this->addFlash('error', $e->getMessage());
             }
@@ -170,7 +195,7 @@ class DefaultController extends AbstractController
         
         return $this->render('@NovosgaScheduling/default/form.html.twig', [
             'entity' => $entity,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }
