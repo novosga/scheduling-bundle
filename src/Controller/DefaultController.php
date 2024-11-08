@@ -47,7 +47,7 @@ class DefaultController extends AbstractController
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
-        
+
         $qb = $repository
             ->createQueryBuilder('e')
             ->select('e', 'c')
@@ -57,26 +57,26 @@ class DefaultController extends AbstractController
             ->setParameter('unidade', $unidade)
             ->setParameter('situacao', $situacao)
             ->orderBy('e.data', 'DESC');
-        
+
         if (!empty($search)) {
-            $where = [ 
+            $where = [
                 'c.email LIKE :s',
                 'c.documento LIKE :s'
             ];
             $qb->setParameter('s', "%{$search}%");
-            
+
             $tokens = explode(' ', $search);
-            
+
             for ($i = 0; $i < count($tokens); $i++) {
                 $value = $tokens[$i];
                 $v1 = "n{$i}";
                 $where[] = "(UPPER(c.nome) LIKE UPPER(:{$v1}))";
                 $qb->setParameter($v1, "{$value}%");
             }
-            
+
             $qb->andWhere(join(' OR ', $where));
         }
-        
+
         $query = $qb->getQuery();
 
         $currentPage = max(1, (int) $request->get('p'));
@@ -86,7 +86,7 @@ class DefaultController extends AbstractController
         $pagerfanta = new Pagerfanta($adapter);
 
         $pagerfanta->setCurrentPage($currentPage);
-        
+
         $path = $this->generateUrl('novosga_scheduling_index');
         $html = $view->render(
             $pagerfanta,
@@ -113,7 +113,7 @@ class DefaultController extends AbstractController
         );
 
         $agendamentos = $pagerfanta->getCurrentPageResults();
-        
+
         return $this->render('@NovosgaScheduling/default/index.html.twig', [
             'agendamentos' => $agendamentos,
             'paginacao' => $html,
@@ -145,12 +145,12 @@ class DefaultController extends AbstractController
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
-    
+
         $entity = $service->getById($id);
         if (!$entity) {
             throw $this->createNotFoundException();
         }
-    
+
         if ($entity->getUnidade() && $entity->getUnidade()->getId() !== $unidade->getId()) {
             return $this->redirectToRoute('novosga_scheduling_index');
         }
@@ -171,11 +171,11 @@ class DefaultController extends AbstractController
                 'disabled' => $isDisabled,
             ])
             ->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $service->save($entity);
-                
+
                 $this->addFlash(
                     'success',
                     $translator->trans(
@@ -184,7 +184,7 @@ class DefaultController extends AbstractController
                         NovosgaSchedulingBundle::getDomain(),
                     )
                 );
-                
+
                 return $this->redirectToRoute('novosga_scheduling_edit', [
                     'id' => $entity->getId(),
                 ]);
@@ -192,7 +192,7 @@ class DefaultController extends AbstractController
                 $this->addFlash('error', $e->getMessage());
             }
         }
-        
+
         return $this->render('@NovosgaScheduling/default/form.html.twig', [
             'entity' => $entity,
             'form' => $form,
