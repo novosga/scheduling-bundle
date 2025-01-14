@@ -1,0 +1,20 @@
+{% include 'flashMessages.html.twig' %}
+
+<div class="row">
+    <div class="col-4">
+        {{ form_row(form.documento) }}
+    </div>
+    <div class="col-8">
+        {{ form_row(form.nome) }}
+    </div>
+    <div class="col-3">
+        {{ form_row(form.telefone) }}
+    </div>
+    <div class="col-3">
+        {{ form_row(form.genero) }}
+    </div>
+    <div class="col-6">
+        {{ form_row(form.email) }}
+    </div>
+</div>
+{{ form_row(form.observacao) }}

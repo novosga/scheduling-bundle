@@ -29,39 +29,37 @@
         {% include 'flashMessages.html.twig' %}
 
         <div class="row">
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2">
                 {{ form_row(form.data) }}
             </div>
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
                 {{ form_row(form.hora) }}
             </div>
-            <div class="col-12 col-md-5 col-lg-7">
+            {% if entity.id %}
+                <div class="col-12 col-sm-6 col-md-3 col-lg-2">
+                    <div class="mb-3">
+                        <label class="form-label">{{ 'label.status'|trans }}</label>
+                        <input type="text" class="form-control" value="{{ entity.situacao }}" disabled>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-6">
                 {{ form_row(form.servico) }}
             </div>
-        </div>
-
-        <div class="row">
             <div class="col-12 col-lg-6">
-                {{ form_row(form.cliente.nome) }}
-            </div>
-            <div class="col-12 col-lg-6">
-                {{ form_row(form.cliente.email) }}
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12 col-md-4">
-                {{ form_row(form.cliente.documento) }}
-            </div>
-            <div class="col-12 col-md-4">
-                {{ form_row(form.cliente.telefone) }}
-            </div>
-            <div class="col-12 col-md-4">
-                {{ form_row(form.cliente.genero) }}
+                {{ form_label(form.cliente) }}
+                <div class="input-group">
+                    {{ form_widget(form.cliente) }}
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-target="#clienteFormModal" data-bs-toggle="modal">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-
-        {{ form_row(form.cliente.observacao) }}
 
         <div class="d-flex">
             {% if not entity.dataConfirmacao %}
@@ -78,9 +76,66 @@
 
     {{ form_end(form) }}
 
+    <div id="clienteFormModal" class="modal modal-lg fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="clienteForm" action="{{ path('mangati_scheduling_clientes_form') }}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Novo cliente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ render(path('mangati_scheduling_clientes_form')) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('bundles/novosgascheduling/js/script.js') }}"></script>
+    <script src="{{ asset('bundles/novosgascheduling/js/tom-select.complete.min.js') }}"></script>
+    <link href="{{ asset('bundles/novosgascheduling/css/tom-select.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/novosgascheduling/css/tom-select.bootstrap5.min.css') }}" rel="stylesheet">
+    <script>
+        const cliente = document.getElementById('{{ form.cliente.vars.id }}');
+        const clienteForm = document.getElementById('clienteForm')
+
+        new TomSelect("#{{ form.cliente.vars.id }}", {
+            create: false,
+            valueField: 'id',
+	        labelField: 'value',
+            searchField: 'value',
+            load: function(query, callback) {
+                var url = '{{ path("mangati_scheduling_clientes_autocomplete") }}?q=' + encodeURIComponent(query);
+                fetch(url)
+                    .then(response => response.json())
+                    .then(json => {
+                        callback(json);
+                    }).catch(()=>{
+                        callback();
+                    });
+            },
+        });
+
+        clienteForm.addEventListener('submit', async (evt) => {
+            evt.preventDefault();
+
+            const req = await fetch(clienteForm.getAttribute('action'), {
+                method: 'post',
+                body: new FormData(clienteForm),
+            });
+
+            const resp = await req.text();
+            clienteForm.querySelector('.modal-body').innerHTML = resp;
+        });
+    </script>
 {% endblock %}

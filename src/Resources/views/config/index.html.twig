@@ -1,0 +1,162 @@
+{% extends "@NovosgaScheduling/base.html.twig" %}
+
+{% trans_default_domain 'NovosgaSchedulingBundle' %}
+
+{% block body %}
+    <div class="d-flex">
+        <div>
+            <h1>
+                <i class="fa fa-cog" aria-hidden="true"></i> {{ 'config_title'|trans }}
+            </h1>
+            <p>{{ 'config_subtitle'|trans }}</p>
+        </div>
+        <div class="ms-auto pt-3">
+            <a href="{{ path('novosga_scheduling_index') }}" class="btn btn-outline-secondary">
+                <i class="fa fa-address-book"></i>&nbsp;
+                {% trans %}Agendamentos{% endtrans %}
+            </a>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <p>Configuração de agendamento para a unidade <strong>{{ unidade.nome }}</strong></p>
+    </div>
+
+    <fieldset>
+        <legend>Integração externa</legend>
+        {{ form_start(form) }}
+
+            {% include 'flashMessages.html.twig' %}
+
+            <div class="row">
+                <div class="col-12 col-lg-2">
+                    {{ form_row(form.provider) }}
+                </div>
+                <div class="col-12 col-lg-4">
+                    {{ form_row(form.apiUrl) }}
+                </div>
+                <div class="col-12 col-lg-3">
+                    {{ form_row(form.accessToken, { type: 'password' }) }}
+                </div>
+                <div class="col-12 col-lg-3">
+                    {{ form_row(form.unidadeRemota, {
+                        row_attr: {
+                            class: 'placeholder-grow'
+                        },
+                    }) }}
+                </div>
+            </div>
+
+            <div class="d-flex">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-check"></i> 
+                    {{ 'button.save'|trans }}
+                </button>
+            </div>
+        {{ form_end(form) }}
+    </fieldset>
+
+    <hr>
+
+    <h3>{{ 'label.service_configs'|trans }}</h3>
+    <table class="table table-hover border">
+        <thead>
+            <tr class="table-primary">
+                <th>{{ 'label.local_service'|trans }}</th>
+                <th>{{ 'label.remote_service'|trans }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for config in servicoConfigs %}
+                <tr>
+                    <td>{{ config.servicoLocal.nome }}</td>
+                    <td>
+                        {% set nomeServicoRemoto = config.servicoRemoto %}
+                        {% for servicoRemoto in servicosRemotos %}
+                            {% if servicoRemoto.id == config.servicoRemoto %}
+                                {% set nomeServicoRemoto = servicoRemoto.nome %}
+                            {% endif %}
+                        {% endfor %}
+                        {{- nomeServicoRemoto -}}
+                    </td>
+                    <td class="text-end">
+                        <a href="{{ path('novosga_scheduling_config_edit', { id: config.servicoLocal.id }) }}" class="btn btn-secondary">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td class="text-end">
+                    <a href="{{ path('novosga_scheduling_config_new') }}" class="btn btn-primary ml-auto">
+                        <i class="fa fa-plus"></i>
+                        {{ 'button.new_config'|trans }}
+                    </a>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/novosgascheduling/js/script.js') }}" defer></script>
+    <script>
+        const form = document.querySelector('[name="{{ form.vars.id }}"]');
+        const provider = document.getElementById('{{ form.provider.vars.id }}');
+        const apiUrl = document.getElementById('{{ form.apiUrl.vars.id }}');
+        const accessToken = document.getElementById('{{ form.accessToken.vars.id }}');
+        const unidadeRemota = document.getElementById('{{ form.unidadeRemota.vars.id }}');
+
+        const updateForm = async (data, url, method) => {
+            const req = await fetch(window.location.href, {
+                method: 'post',
+                body: data,
+            });
+            return req.text();
+        };
+
+        const parseTextToHtml = (text) => {
+            const parser = new DOMParser();
+            const html = parser.parseFromString(text, 'text/html');
+
+            return html;
+        };
+
+        const changeOptions = async (e) => {
+            if (!provider.value || !apiUrl.value || !accessToken.value) {
+                return;
+            }
+
+            unidadeRemota.classList.add('placeholder');
+            try {
+                const requestBody = new FormData();
+                requestBody.append('{{ form.provider.vars.full_name }}', provider.value);
+                requestBody.append('{{ form.apiUrl.vars.full_name }}', apiUrl.value);
+                requestBody.append('{{ form.accessToken.vars.full_name }}', accessToken.value);
+                const updateFormResponse = await updateForm(requestBody);
+                const html = parseTextToHtml(updateFormResponse);
+
+                const newSelect = html.getElementById('{{ form.unidadeRemota.vars.id }}');
+                unidadeRemota.innerHTML = newSelect.innerHTML;
+            } catch (e) {
+                console.error(e);
+            }
+            unidadeRemota.classList.remove('placeholder');
+        };
+
+        provider.addEventListener('change', (e) => {
+            const option = provider.selectedOptions[0];
+            if (option && option.dataset.defaultUrl) {
+                apiUrl.value = option.dataset.defaultUrl;
+            }
+        });
+
+        [provider, apiUrl, accessToken].forEach(input => input.addEventListener('change', (e) => changeOptions(e)));
+    </script>
+{% endblock %}

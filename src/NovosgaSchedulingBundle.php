@@ -15,6 +15,11 @@ namespace Novosga\SchedulingBundle;
 
 use Novosga\Module\BaseModule;
 
+/**
+ * NovosgaSchedulingBundle
+ *
+ * @author Rogerio Lino <rogeriolino@gmail.com>
+ */
 class NovosgaSchedulingBundle extends BaseModule
 {
     public function getIconName(): string
