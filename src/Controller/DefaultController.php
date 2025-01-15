@@ -43,7 +43,7 @@ class DefaultController extends AbstractController
         AgendamentoRepositoryInterface $repository,
     ): Response {
         $search = $request->get('q', '');
-        $situacao = $request->get('situacao', AgendamentoInterface::SITUACAO_AGENDADO);
+        $situacao = $request->get('situacao', '');
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -53,10 +53,14 @@ class DefaultController extends AbstractController
             ->select('e', 'c')
             ->join('e.cliente', 'c')
             ->where('e.unidade = :unidade')
-            ->andWhere('e.situacao = :situacao')
             ->setParameter('unidade', $unidade)
-            ->setParameter('situacao', $situacao)
             ->orderBy('e.data', 'DESC');
+
+        if ($situacao) {
+            $qb
+                ->andWhere('e.situacao = :situacao')
+                ->setParameter('situacao', $situacao);
+        }
 
         if (!empty($search)) {
             $where = [

@@ -15,7 +15,11 @@
         "pagerfanta/doctrine-orm-adapter": "*",
         "pagerfanta/pagerfanta": "^4.6",
         "symfony/framework-bundle": "7.1.*",
-        "symfony/form": "7.1.*"
+        "symfony/form": "7.1.*",
+        "symfony/security-core": "7.1.*",
+        "symfony/validator": "7.1.*",
+        "symfony/http-client": "7.1.*",
+        "symfony/security-bundle": "7.1.*"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.10",

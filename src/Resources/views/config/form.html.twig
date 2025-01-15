@@ -1,0 +1,57 @@
+{% extends "@NovosgaScheduling/base.html.twig" %}
+
+{% trans_default_domain 'NovosgaSchedulingBundle' %}
+
+{% block body %}
+    <div class="d-flex">
+        <div>
+            <h1>
+                <i class="fa fa-address-book" aria-hidden="true"></i> {{ 'config_title'|trans }}
+            </h1>
+            <p>{{ 'config_subtitle'|trans }}</p>
+        </div>
+    </div>
+
+    {{ form_start(form) }}
+
+        {% include 'flashMessages.html.twig' %}
+
+        {{ form_row(form.servicoLocal) }}
+        {{ form_row(form.servicoRemoto, { attr: { autocomplete: 'no' }  }) }}
+
+        <hr>
+
+        <div class="d-flex">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-check"></i> 
+                {{ 'button.save'|trans }}
+            </button>
+            <a href="{{ path('novosga_scheduling_config_index') }}" class="btn btn-link text-decoration-none ms-2">
+                <i class="fa fa-chevron-left"></i>
+                {{ 'button.back'|trans }}
+            </a>
+
+            {% if config.servicoLocal %}
+                <button type="submit" class="btn btn-danger ms-auto" form="config-delete-form">
+                    <i class="fa fa-trash"></i> 
+                    {{ 'button.remove'|trans }}
+                </button>
+            {% endif %}
+        </div>
+
+    {{ form_end(form) }}
+
+    {% if config.servicoLocal %}
+        <form
+            id="config-delete-form"
+            action="{{ path('novosga_scheduling_config_delete', { id: config.servicoLocal.id }) }}"
+            method="post"
+            onsubmit="confirm('{{ 'alert.delete'|trans }}')">
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/novosgascheduling/js/script.js') }}" defer></script>
+{% endblock %}

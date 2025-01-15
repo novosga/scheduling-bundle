@@ -14,6 +14,14 @@
         <source>subtitle</source>
         <target>Gerencie os agendamentos de atendimento</target>
       </trans-unit>
+      <trans-unit id="config_title">
+        <source>config_title</source>
+        <target>Configurações de Agendamento</target>
+      </trans-unit>
+      <trans-unit id="config_subtitle">
+        <source>config_subtitle</source>
+        <target>Integração com sistemas externos</target>
+      </trans-unit>
       <trans-unit id="label.name">
         <source>label.name</source>
         <target>Nome</target>
@@ -64,7 +72,7 @@
       </trans-unit>
       <trans-unit id="label.date">
         <source>label.date</source>
-        <target>Data chegada</target>
+        <target>Data</target>
       </trans-unit>
       <trans-unit id="label.status">
         <source>label.status</source>
@@ -114,9 +122,37 @@
           <source>label.notes</source>
           <target>Observação</target>
       </trans-unit>
+      <trans-unit id="label.local_service">
+          <source>label.local_service</source>
+          <target>Serviço local</target>
+      </trans-unit>
+      <trans-unit id="label.remote_service">
+          <source>label.remote_service</source>
+          <target>Serviço remoto</target>
+      </trans-unit>
+      <trans-unit id="button.new_config">
+          <source>button.new_config</source>
+          <target>Nova agenda</target>
+      </trans-unit>
+      <trans-unit id="button.remove">
+          <source>button.remove</source>
+          <target>Excluir</target>
+      </trans-unit>
+      <trans-unit id="form.config.password">
+          <source>form.config.password</source>
+          <target>Senha</target>
+      </trans-unit>
       <trans-unit id="label.add_success">
           <source>label.add_success</source>
           <target>Agendamento adicionado com successo</target>
+      </trans-unit>
+      <trans-unit id="label.add_config_success">
+          <source>label.add_config_success</source>
+          <target>Configuração atualizada com successo</target>
+      </trans-unit>
+      <trans-unit id="label.remote_unity">
+          <source>label.remote_unity</source>
+          <target>Unidade remota</target>
       </trans-unit>
       <trans-unit id="label.url_api">
           <source>label.url_api</source>
@@ -125,6 +161,18 @@
       <trans-unit id="label.service">
           <source>label.service</source>
           <target>Serviço</target>
+      </trans-unit>
+      <trans-unit id="label.api_provider">
+          <source>label.api_provider</source>
+          <target>Provedor</target>
+      </trans-unit>
+      <trans-unit id="label.api_access_token">
+          <source>label.api_access_token</source>
+          <target>Access Token</target>
+      </trans-unit>
+      <trans-unit id="label.service_configs">
+          <source>label.service_configs</source>
+          <target>Agendas</target>
       </trans-unit>
       <trans-unit id="label.status_agendado">
           <source>label.status_agendado</source>
@@ -137,6 +185,10 @@
       <trans-unit id="label.status_nao_compareceu">
           <source>label.status_nao_compareceu</source>
           <target>Não compareceu</target>
+      </trans-unit>
+      <trans-unit id="alert.delete">
+          <source>alert.delete</source>
+          <target>Deseja realmente excluir?</target>
       </trans-unit>
     </body>
   </file>
