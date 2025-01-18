@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
-#[Route("/clientes", name: "mangati_scheduling_clientes_")]
+#[Route("/clientes", name: "novosga_scheduling_clientes_")]
 class ClientesController extends AbstractController
 {
     #[Route("/autocomplete", name: "autocomplete", methods: ["GET"])]
