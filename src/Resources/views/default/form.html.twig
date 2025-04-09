@@ -114,6 +114,12 @@
             valueField: 'id',
 	        labelField: 'value',
             searchField: 'value',
+            placeholder: 'Digite para buscar cliente',
+	        render: {
+                no_results:function(data,escape){
+                    return '<div class="no-results">Nenhum cliente encontrado</div>';
+                },
+            },
             load: function(query, callback) {
                 var url = '{{ path("novosga_scheduling_clientes_autocomplete") }}?q=' + encodeURIComponent(query);
                 fetch(url)
