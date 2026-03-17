@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Novosga\SchedulingBundle\Command;
 
 use DateTime;
+use DateTimeImmutable;
+use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
 use Novosga\Entity\AgendamentoInterface;
 use Novosga\Repository\AgendamentoRepositoryInterface;
@@ -53,8 +55,7 @@ class DailyCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Novo SGA Scheduling Daily');
 
-        $today = new DateTime();
-        $today->setTime(0, 0, 0, 0);
+        $today = new DateTimeImmutable('today', new DateTimeZone('UTC'));
         $limit = 100;
         $offset = 0;
 

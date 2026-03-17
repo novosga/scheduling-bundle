@@ -16,6 +16,7 @@ namespace Novosga\SchedulingBundle\Command;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 use Novosga\Entity\AgendamentoInterface;
 use Novosga\Entity\UnidadeInterface;
 use Novosga\Repository\AgendamentoRepositoryInterface;
@@ -71,8 +72,7 @@ class SyncCommand extends Command
 
     private function syncLocalToRemove(SymfonyStyle $io): void
     {
-        $today = new DateTime();
-        $today->setTime(0, 0, 0, 0);
+        $today = new DateTimeImmutable('today', new DateTimeZone('UTC'));
         $limit = 100;
         $offset = 0;
 
