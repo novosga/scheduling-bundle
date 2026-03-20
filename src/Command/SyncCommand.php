@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Novosga\SchedulingBundle\Command;
 
 use DateInterval;
+use Doctrine\DBAL\Types\Types;
 use Novosga\Entity\AgendamentoInterface;
 use Novosga\Entity\UnidadeInterface;
 use Novosga\Repository\AgendamentoRepositoryInterface;
@@ -98,7 +99,7 @@ class SyncCommand extends Command
             ->andWhere('e.data >= :today')
             ->setParameter('unidade', $unidade->getId())
             ->setParameter('situacao', AgendamentoInterface::SITUACAO_CONFIRMADO)
-            ->setParameter('today', $today)
+            ->setParameter('today', $today, Types::DATE_IMMUTABLE)
             ->setMaxResults($limit)
             ->getQuery();
 

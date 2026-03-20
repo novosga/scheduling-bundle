@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Novosga\SchedulingBundle\Command;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Novosga\Entity\AgendamentoInterface;
 use Novosga\Entity\UnidadeInterface;
@@ -96,7 +97,7 @@ class DailyCommand extends Command
             ->andWhere('e.data < :today')
             ->setParameter('unidade', $unidade->getId())
             ->setParameter('situacao', AgendamentoInterface::SITUACAO_AGENDADO)
-            ->setParameter('today', $today)
+            ->setParameter('today', $today, Types::DATE_IMMUTABLE)
             ->setMaxResults($limit)
             ->getQuery();
 
