@@ -20,7 +20,7 @@
 
     {% if entity.dataConfirmacao %}
         <div class="alert alert-info">
-            Confirmada presença do agendamento e senha gerada em <strong>{{ entity.dataConfirmacao|date('d/m/Y H:i:s') }}</strong>.
+            Confirmada presença do agendamento e senha gerada em <strong>{{ entity.dataConfirmacao|date('d/m/Y H:i:s', entity.unidade.timezone) }}</strong>.
         </div>
     {% endif %}
         

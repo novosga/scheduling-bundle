@@ -14,8 +14,7 @@ declare(strict_types=1);
 namespace Novosga\SchedulingBundle\Command;
 
 use DateInterval;
-use DateTime;
-use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use Novosga\Entity\AgendamentoInterface;
 use Novosga\Entity\UnidadeInterface;
 use Novosga\Repository\AgendamentoRepositoryInterface;
@@ -26,6 +25,7 @@ use Novosga\SchedulingBundle\Service\ConfigService;
 use Novosga\SchedulingBundle\Service\ExternalApiClientFactory;
 use Novosga\SchedulingBundle\ValueObject\ServicoConfig;
 use Novosga\SchedulingBundle\ValueObject\UnidadeConfig;
+use Psr\Clock\ClockInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -54,6 +54,7 @@ class SyncCommand extends Command
         private readonly ExternalApiClientFactory $clientFactory,
         private readonly UnidadeRepositoryInterface $unidadeRepository,
         private readonly AgendamentoRepositoryInterface $agendamentoRepository,
+        private readonly ClockInterface $clock,
     ) {
         parent::__construct();
     }
@@ -63,26 +64,42 @@ class SyncCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Novo SGA Scheduling Sync');
 
-        $this->syncLocalToRemove($io);
-        $this->syncRemoteToLocal($io);
+        /** @var UnidadeInterface[] */
+        $unidades = $this->unidadeRepository->findBy([
+            'ativo' => true,
+        ]);
+
+        foreach ($unidades as $unidade) {
+            $io->info(sprintf(
+                '[unidade-%s] Syncing appointments for Unit %s',
+                $unidade->getId(),
+                $unidade->getNome(),
+            ));
+
+            $this->syncLocalToRemove($unidade, $io);
+            $this->syncRemoteToLocal($unidade, $io);
+        }
 
         return Command::SUCCESS;
     }
 
-    private function syncLocalToRemove(SymfonyStyle $io): void
+    private function syncLocalToRemove(UnidadeInterface $unidade, SymfonyStyle $io): void
     {
-        $today = new DateTime();
-        $today->setTime(0, 0, 0, 0);
+        $io->text(sprintf("[unidade-%s] Updating remote from local", $unidade->getId()));
+
+        $today = $this->clock->now()->setTimezone($unidade->getDateTimeZone());
         $limit = 100;
         $offset = 0;
 
         $query = $this
             ->agendamentoRepository
             ->createQueryBuilder('e')
-            ->where('e.situacao = :situacao')
+            ->where('e.unidade = :unidade')
+            ->andWhere('e.situacao = :situacao')
             ->andWhere('e.data >= :today')
+            ->setParameter('unidade', $unidade->getId())
             ->setParameter('situacao', AgendamentoInterface::SITUACAO_CONFIRMADO)
-            ->setParameter('today', $today)
+            ->setParameter('today', $today, Types::DATE_IMMUTABLE)
             ->setMaxResults($limit)
             ->getQuery();
 
@@ -94,7 +111,7 @@ class SyncCommand extends Command
             /** @var AgendamentoInterface $agendamento */
             foreach ($agendamentos as $agendamento) {
                 $io->text(sprintf(
-                    "Updating schedule ID %s, date %s",
+                    "Updating appointment ID %s, date %s",
                     $agendamento->getId(),
                     $agendamento->getData()->format('Y-m-d'),
                 ));
@@ -112,7 +129,7 @@ class SyncCommand extends Command
                     );
                 } catch (Throwable $ex) {
                     $io->error(sprintf(
-                        "Failed to update remove schedule (OID: %s): %s",
+                        "Failed to update remove appointment (OID: %s): %s",
                         $agendamento->getOid(),
                         $ex->getMessage(),
                     ));
@@ -123,26 +140,23 @@ class SyncCommand extends Command
         } while (!empty($agendamentos));
     }
 
-    private function syncRemoteToLocal(SymfonyStyle $io): void
+    private function syncRemoteToLocal(UnidadeInterface $unidade, SymfonyStyle $io): void
     {
-        $unidades = $this->unidadeRepository->findAll();
+        $io->text(sprintf("[unidade-%s] Updating local remote", $unidade->getId()));
 
-        /** @var UnidadeInterface $unidade */
-        foreach ($unidades as $unidade) {
-            $unidadeConfig = $this->configService->getUnidadeConfig($unidade);
-            if ($unidadeConfig) {
-                $io->section("Config found for unity {$unidade->getNome()}");
-                $servicoConfigs = $this->configService->getServicoConfigs($unidade);
-                if (!count($servicoConfigs)) {
-                    $io->info("No services config found");
-                }
-                foreach ($servicoConfigs as $servicoConfig) {
-                    try {
-                        $io->text("Syncing schedule for service {$servicoConfig->servicoLocal->getNome()} ... ");
-                        $this->doSyncRemoteToLocal($io, $unidade, $unidadeConfig, $servicoConfig);
-                    } catch (Throwable $e) {
-                        $io->error($e->getMessage());
-                    }
+        $unidadeConfig = $this->configService->getUnidadeConfig($unidade);
+        if ($unidadeConfig) {
+            $io->section("Config found for unity {$unidade->getNome()}");
+            $servicoConfigs = $this->configService->getServicoConfigs($unidade);
+            if (!count($servicoConfigs)) {
+                $io->info("No services config found");
+            }
+            foreach ($servicoConfigs as $servicoConfig) {
+                try {
+                    $io->text("Syncing appointment for service {$servicoConfig->servicoLocal->getNome()} ... ");
+                    $this->doSyncRemoteToLocal($io, $unidade, $unidadeConfig, $servicoConfig);
+                } catch (Throwable $e) {
+                    $io->error($e->getMessage());
                 }
             }
         }
@@ -156,7 +170,7 @@ class SyncCommand extends Command
     ): void {
         $total = 0;
         $totalSaved = 0;
-        $startDate = new DateTimeImmutable();
+        $startDate = $this->clock->now()->setTimezone($unidade->getDateTimeZone());
         $days = 0;
         $client = $this->getClient($unidade, $unidadeConfig);
 
