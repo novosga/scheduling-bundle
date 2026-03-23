@@ -3,10 +3,14 @@
     "license": "MIT",
     "type": "symfony-bundle",
     "autoload": {
-        "psr-4": { "Novosga\\SchedulingBundle\\": "src/" }
+        "psr-4": {
+            "Novosga\\SchedulingBundle\\": "src/"
+        }
     },
     "autoload-dev": {
-        "psr-4": { "Novosga\\SchedulingBundle\\Tests\\": "tests/" }
+        "psr-4": {
+            "Novosga\\SchedulingBundle\\Tests\\": "tests/"
+        }
     },
     "require": {
         "php": ">=8.2",
@@ -14,12 +18,12 @@
         "novosga/core": "2.3.x-dev",
         "pagerfanta/doctrine-orm-adapter": "*",
         "pagerfanta/pagerfanta": "^4.6",
-        "symfony/framework-bundle": "7.1.*",
-        "symfony/form": "7.1.*",
-        "symfony/security-core": "7.1.*",
-        "symfony/validator": "7.1.*",
-        "symfony/http-client": "7.1.*",
-        "symfony/security-bundle": "7.1.*"
+        "symfony/framework-bundle": "7.4.*",
+        "symfony/form": "7.4.*",
+        "symfony/security-core": "7.4.*",
+        "symfony/validator": "7.4.*",
+        "symfony/http-client": "7.4.*",
+        "symfony/security-bundle": "7.4.*"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.10",
