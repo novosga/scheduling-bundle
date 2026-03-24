@@ -23,7 +23,7 @@ use Novosga\SchedulingBundle\Service\ExternalApiClientFactory;
 use Novosga\SchedulingBundle\ValueObject\ServicoConfig;
 use Novosga\SchedulingBundle\ValueObject\UnidadeConfig;
 use Novosga\Service\ServicoServiceInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
