@@ -19,7 +19,7 @@ use Novosga\Entity\ClienteInterface;
 use Novosga\Form\ClienteType;
 use Novosga\Repository\ClienteRepositoryInterface;
 use Novosga\Service\ClienteServiceInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
