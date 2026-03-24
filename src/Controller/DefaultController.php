@@ -42,8 +42,8 @@ class DefaultController extends AbstractController
         Request $request,
         AgendamentoRepositoryInterface $repository,
     ): Response {
-        $search = $request->get('q', '');
-        $situacao = $request->get('situacao', '');
+        $search = $request->query->get('q', '');
+        $situacao = $request->query->get('situacao', '');
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
@@ -83,7 +83,7 @@ class DefaultController extends AbstractController
 
         $query = $qb->getQuery();
 
-        $currentPage = max(1, (int) $request->get('p'));
+        $currentPage = max(1, (int) $request->query->get('p'));
 
         $adapter = new QueryAdapter($query);
         $view = new TwitterBootstrap5View();
@@ -98,7 +98,7 @@ class DefaultController extends AbstractController
                 $params = [];
                 $vars = ['q', 'situacao'];
                 foreach ($vars as $name) {
-                    $value = $request->get($name);
+                    $value = $request->query->get($name);
                     if ($value !== null) {
                         $params[] = "{$name}={$value}";
                     }

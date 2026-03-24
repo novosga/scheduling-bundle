@@ -37,7 +37,7 @@ class ClientesController extends AbstractController
         Request $request,
         ClienteRepositoryInterface $repository,
     ): Response {
-        $search = $request->get('q', '');
+        $search = $request->query->get('q', '');
         $clientes = $repository
             ->createQueryBuilder('e')
             ->where('UPPER(e.nome) LIKE UPPER(:nome)')
