@@ -38,7 +38,7 @@ class ServicoConfigType extends AbstractType
         private readonly Security $security,
         private readonly ConfigService $service,
         private readonly ServicoRepositoryInterface $servicoRepository,
-        private readonly ExternalApiClientFactory $clientFactory
+        private readonly ExternalApiClientFactory $clientFactory,
     ) {
     }
 
@@ -61,6 +61,7 @@ class ServicoConfigType extends AbstractType
 
         $builder
             ->add('servicoLocal', ChoiceType::class, [
+                'disabled' => !$options['isNew'],
                 'constraints' => [
                     new NotNull(),
                 ],
@@ -85,6 +86,7 @@ class ServicoConfigType extends AbstractType
         $resolver->setDefaults([
             'data_class' => ServicoConfig::class,
             'translation_domain' => 'NovosgaSchedulingBundle',
+            'isNew' => false,
         ]);
     }
 }
