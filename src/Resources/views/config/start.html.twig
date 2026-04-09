@@ -1,0 +1,118 @@
+{% extends "@NovosgaScheduling/base.html.twig" %}
+
+{% trans_default_domain 'NovosgaSchedulingBundle' %}
+
+{% block body %}
+    <div class="d-flex align-items-start mb-4">
+        <div>
+            <h1>
+                <i class="fa fa-cog" aria-hidden="true"></i> {{ 'config_title'|trans }}
+            </h1>
+            <p class="text-muted">{{ 'config_subtitle'|trans }}</p>
+        </div>
+        <div class="ms-auto pt-3">
+            <a href="{{ path('novosga_scheduling_index') }}" class="btn btn-outline-secondary">
+                <i class="fa fa-chevron-left"></i>&nbsp;
+                {{ 'button.back'|trans }}
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="fa fa-plug"></i> {{ 'label.integration'|trans }}
+            </h5>
+        </div>
+        <div class="card-body">
+            {{ form_start(form) }}
+
+                {% include 'flashMessages.html.twig' %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form_row(form.provider) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_row(form.apiUrl) }}
+                    </div>
+                </div>
+
+                {{ form_row(form.accessToken, { type: 'password', attr: { autocomplete: 'off' } }) }}
+
+                <div class="mb-3">
+                    <label class="form-label">{{ 'label.local_unity'|trans }}</label>
+                    <input type="text" class="form-control" value="{{ unidade.nome }}" disabled>
+                </div>
+
+                <div class="mb-3 position-relative">
+                    {{ form_row(form.unidadeRemota) }}
+                    <div id="loading-spinner" class="d-none position-absolute" style="top: 2rem; right: 0.75rem;">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                            <span class="visually-hidden">{{ 'label.loading'|trans }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-check"></i>
+                        {{ 'button.save'|trans }}
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/novosgascheduling/js/script.js') }}" defer></script>
+    <script>
+        const provider = document.getElementById('{{ form.provider.vars.id }}');
+        const apiUrl = document.getElementById('{{ form.apiUrl.vars.id }}');
+        const accessToken = document.getElementById('{{ form.accessToken.vars.id }}');
+        const unidadeRemota = document.getElementById('{{ form.unidadeRemota.vars.id }}');
+        const spinner = document.getElementById('loading-spinner');
+
+        const changeOptions = async () => {
+            if (!provider.value || !apiUrl.value || !accessToken.value) {
+                return;
+            }
+
+            spinner.classList.remove('d-none');
+            unidadeRemota.disabled = true;
+
+            try {
+                const requestBody = new FormData();
+                requestBody.append('{{ form.provider.vars.full_name }}', provider.value);
+                requestBody.append('{{ form.apiUrl.vars.full_name }}', apiUrl.value);
+                requestBody.append('{{ form.accessToken.vars.full_name }}', accessToken.value);
+
+                const req = await fetch(window.location.href, { method: 'post', body: requestBody });
+                const text = await req.text();
+                const html = new DOMParser().parseFromString(text, 'text/html');
+                const newSelect = html.getElementById('{{ form.unidadeRemota.vars.id }}');
+                if (newSelect) {
+                    unidadeRemota.innerHTML = newSelect.innerHTML;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+
+            unidadeRemota.disabled = false;
+            spinner.classList.add('d-none');
+        };
+
+        provider.addEventListener('change', (e) => {
+            const option = provider.selectedOptions[0];
+            if (option && option.dataset.defaultUrl) {
+                apiUrl.value = option.dataset.defaultUrl;
+            }
+            changeOptions();
+        });
+
+        [apiUrl, accessToken].forEach(input => input.addEventListener('change', changeOptions));
+    </script>
+{% endblock %}

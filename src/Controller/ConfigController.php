@@ -20,6 +20,7 @@ use Novosga\SchedulingBundle\Form\UnidadeConfigType;
 use Novosga\SchedulingBundle\NovosgaSchedulingBundle;
 use Novosga\SchedulingBundle\Service\ConfigService;
 use Novosga\SchedulingBundle\Service\ExternalApiClientFactory;
+use Novosga\SchedulingBundle\Service\SyncService;
 use Novosga\SchedulingBundle\ValueObject\ServicoConfig;
 use Novosga\SchedulingBundle\ValueObject\UnidadeConfig;
 use Novosga\Service\ServicoServiceInterface;
@@ -52,13 +53,35 @@ class ConfigController extends AbstractController
         $servicosRemotos = [];
 
         if (!$unidadeConfig) {
-            $unidadeConfig = new UnidadeConfig();
-        } else {
-            try {
-                $servicosRemotos = $clientFactory->create($unidadeConfig)->getServicos();
-            } catch (Throwable $ex) {
-            }
+            return $this->redirectToRoute('novosga_scheduling_config_start');
         }
+
+        try {
+            $servicosRemotos = $clientFactory->create($unidadeConfig)->getServicos();
+        } catch (Throwable $ex) {
+            $this->addFlash('danger', $ex->getMessage());
+        }
+
+        $servicoConfigs = $service->getServicoConfigs($unidade);
+
+        return $this->render('@NovosgaScheduling/config/index.html.twig', [
+            'unidade' => $unidade,
+            'unidadeConfig' => $unidadeConfig,
+            'servicoConfigs' => $servicoConfigs,
+            'servicosRemotos' => $servicosRemotos,
+        ]);
+    }
+
+    #[Route("/start", name: "start", methods: ["GET", "POST"])]
+    public function start(
+        Request $request,
+        ConfigService $service,
+        TranslatorInterface $translator,
+    ): Response {
+        /** @var UsuarioInterface */
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        $unidadeConfig = $service->getUnidadeConfig($unidade) ?? new UnidadeConfig();
 
         $form = $this
             ->createForm(UnidadeConfigType::class, $unidadeConfig)
@@ -76,13 +99,9 @@ class ConfigController extends AbstractController
             return $this->redirectToRoute('novosga_scheduling_config_index');
         }
 
-        $servicoConfigs = $service->getServicoConfigs($unidade);
-
-        return $this->render('@NovosgaScheduling/config/index.html.twig', [
+        return $this->render('@NovosgaScheduling/config/start.html.twig', [
             'unidade' => $unidade,
-            'servicoConfigs' => $servicoConfigs,
-            'servicosRemotos' => $servicosRemotos,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 
@@ -92,7 +111,7 @@ class ConfigController extends AbstractController
         TranslatorInterface $translator,
         ConfigService $configService,
     ): Response {
-        return $this->form($request, $translator, $configService, new ServicoConfig());
+        return $this->form($request, $translator, $configService, new ServicoConfig(), true);
     }
 
     #[Route("/{id}/edit", name: "edit", methods: ["GET", "POST"])]
@@ -117,7 +136,33 @@ class ConfigController extends AbstractController
             return $this->redirectToRoute('novosga_scheduling_config_index');
         }
 
-        return $this->form($request, $translator, $configService, $config);
+        return $this->form($request, $translator, $configService, $config, false);
+    }
+
+    #[Route("/sync", name: "sync", methods: ["POST"])]
+    public function sync(
+        SyncService $syncService,
+        TranslatorInterface $translator,
+    ): Response {
+        /** @var UsuarioInterface */
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+
+        $result = $syncService->syncUnidade($unidade);
+
+        if (!empty($result['errors'])) {
+            foreach ($result['errors'] as $error) {
+                $this->addFlash('danger', $error);
+            }
+        } else {
+            $this->addFlash('success', $translator->trans(
+                'label.sync_success',
+                ['%total%' => $result['total'], '%saved%' => $result['saved']],
+                NovosgaSchedulingBundle::getDomain(),
+            ));
+        }
+
+        return $this->redirectToRoute('novosga_scheduling_config_index');
     }
 
     #[Route("/{id}/delete", name: "delete", methods: ["POST"])]
@@ -143,14 +188,17 @@ class ConfigController extends AbstractController
         Request $request,
         TranslatorInterface $translator,
         ConfigService $configService,
-        ServicoConfig $config
+        ServicoConfig $config,
+        bool $isNew,
     ): Response {
         /** @var UsuarioInterface */
         $usuario = $this->getUser();
         $unidade = $usuario->getLotacao()->getUnidade();
 
         $form = $this
-            ->createForm(ServicoConfigType::class, $config, [])
+            ->createForm(ServicoConfigType::class, $config, [
+                'isNew' => $isNew,
+            ])
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

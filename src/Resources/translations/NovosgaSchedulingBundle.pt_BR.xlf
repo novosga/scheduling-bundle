@@ -194,6 +194,34 @@
           <source>alert.delete</source>
           <target>Deseja realmente excluir?</target>
       </trans-unit>
+      <trans-unit id="label.integration">
+          <source>label.integration</source>
+          <target>Integração externa</target>
+      </trans-unit>
+      <trans-unit id="label.local_unity">
+          <source>label.local_unity</source>
+          <target>Unidade local</target>
+      </trans-unit>
+      <trans-unit id="label.service_configs.empty">
+          <source>label.service_configs.empty</source>
+          <target>Nenhuma agenda configurada</target>
+      </trans-unit>
+      <trans-unit id="button.edit_integration">
+          <source>button.edit_integration</source>
+          <target>Editar integração</target>
+      </trans-unit>
+      <trans-unit id="label.loading">
+          <source>label.loading</source>
+          <target>Carregando...</target>
+      </trans-unit>
+      <trans-unit id="button.sync">
+          <source>button.sync</source>
+          <target>Sincronizar</target>
+      </trans-unit>
+      <trans-unit id="label.sync_success">
+          <source>label.sync_success</source>
+          <target>Sincronização concluída. Total de registros: %total%. Novos registros: %saved%.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
