@@ -23,7 +23,7 @@
             Confirmada presença do agendamento e senha gerada em <strong>{{ entity.dataConfirmacao|date('d/m/Y H:i:s', entity.unidade.timezone) }}</strong>.
         </div>
     {% endif %}
-        
+
     {{ form_start(form) }}
 
         {% include 'flashMessages.html.twig' %}
@@ -52,11 +52,13 @@
                 {{ form_label(form.cliente) }}
                 <div class="input-group">
                     {{ form_widget(form.cliente) }}
-                    <div class="input-group-append">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-target="#clienteFormModal" data-bs-toggle="modal">
-                            <i class="fa fa-plus"></i>
-                        </button>
-                    </div>
+                    {% if not entity.oid %}
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-target="#clienteFormModal" data-bs-toggle="modal">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -64,7 +66,7 @@
         <div class="d-flex">
             {% if not entity.dataConfirmacao %}
                 <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-check"></i> 
+                    <i class="fa fa-check"></i>
                     {{ 'button.save'|trans }}
                 </button>
             {% endif %}
